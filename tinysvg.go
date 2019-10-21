@@ -514,3 +514,9 @@ func PointsFromString(pointString string) ([]*Pos, error) {
 	}
 	return points, nil
 }
+
+// Describe can be used for adding a description to the SVG header
+func (svg *Tag) Describe(description string) {
+	desc := svg.AddNewTag([]byte("desc"))
+	desc.AddContent([]byte(description))
+}
