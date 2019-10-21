@@ -1,2 +1,3 @@
 # tinysvg
-Package for drawing and rendering SVG images that follow the TinySVG specification
+
+Package for generating TinySVG 1.2 images.
