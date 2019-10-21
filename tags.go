@@ -190,12 +190,12 @@ func (tag *Tag) AddContent(content []byte) {
 	tag.content = append(tag.content, content...)
 }
 
-// AppendContent appends content to the end of the exising content of a tag
+// AppendContent appends content to the end of the existing content of a tag
 func (tag *Tag) AppendContent(content []byte) {
 	tag.lastContent = append(tag.lastContent, content...)
 }
 
-// AddLastContent appends content to the end of the exising content of a tag.
+// AddLastContent appends content to the end of the existing content of a tag.
 // Deprecated.
 func (tag *Tag) AddLastContent(content []byte) {
 	tag.AppendContent(content)
