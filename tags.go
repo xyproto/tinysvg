@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 )
 
+// Tag represents an XML tag, as part of a larger XML document
 type Tag struct {
 	name        []byte
 	content     []byte
@@ -20,6 +21,7 @@ type Tag struct {
 	firstChild  *Tag // first child
 }
 
+// Document is an XML document, with a title and a root tag
 type Document struct {
 	title []byte
 	root  *Tag
@@ -331,7 +333,7 @@ func (image *Document) String() string {
 	return image.root.String()
 }
 
-// Save the current image as an SVG file
+// SaveSVG will save the current image as an SVG file
 func (image *Document) SaveSVG(filename string) error {
 	return ioutil.WriteFile(filename, image.Bytes(), 0644)
 }
