@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -81,10 +80,14 @@ func NewTinySVG2(p *Pos, s *Size) (*Document, *Tag) {
 	return page, svg
 }
 
-// f2b converts the given float to an int (by rounding it) to a string
-// and then to a byte slice
+// f2b converts the given float64 to a string representation.
+// .0 or .000000 suffixes are stripped.
+// The string is returned as a byte slice.
 func f2b(x float64) []byte {
-	return []byte(strconv.Itoa(int(math.Round(x))))
+	fs := fmt.Sprintf("%f", x)
+	fs = strings.TrimSuffix(fs, ".0")
+	fs = strings.TrimSuffix(fs, ".000000")
+	return []byte(fs)
 }
 
 // Rect a rectangle, given x and y position, width and height.
@@ -204,8 +207,17 @@ func (svg *Tag) Stroke2(c *Color) {
 
 // RGBBytes converts r, g and b (integers in the range 0..255)
 // to a color string on the form "#nnnnnn", returned as a byte slice.
+// May also return colors strings on the form "#nnn".
 func RGBBytes(r, g, b int) []byte {
-	return []byte(fmt.Sprintf("#%x%x%x", r, g, b))
+	rs := strconv.FormatInt(int64(r), 16)
+	gs := strconv.FormatInt(int64(g), 16)
+	bs := strconv.FormatInt(int64(g), 16)
+	if len(rs) == 1 && len(gs) == 1 && len(bs) == 1 {
+		// short form
+		return []byte("#" + rs + gs + bs)
+	}
+	// long form
+	return []byte(fmt.Sprintf("#%02x%02x%02x", r, g, b))
 }
 
 // RGBABytes converts integers r, g and b (the color) and also
