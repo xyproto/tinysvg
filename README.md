@@ -8,6 +8,6 @@ This package mainly uses `[]byte` slices instead of strings, and does not indent
 
 Requires Go 1.9 or later.
 
-* Version: 0.3.0
+* Version: 1.0.0
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 * License: MIT
