@@ -2,7 +2,7 @@
 
 Construct SVG documents and images using Go.
 
-This package mainly uses `[]byte` slices instead of strings, and does not indent the generated SVG daata, for performance and compactness.
+This package mainly uses `[]byte` slices instead of strings, and does not indent the generated SVG data, for performance and compactness.
 
 ## General info
 
