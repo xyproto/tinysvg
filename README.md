@@ -8,4 +8,4 @@ This package mainly uses `[]byte` slices instead of strings, and does not indent
 
 * Version: 1.0.1
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
-* License: MIT
+* License: BSD-3
