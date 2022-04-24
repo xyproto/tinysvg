@@ -45,10 +45,6 @@ func NewTag(name []byte) *Tag {
 	var tag Tag
 	tag.name = name
 	tag.attrs = make(map[string][]byte)
-	tag.nextSibling = nil
-	tag.firstChild = nil
-	tag.content = make([]byte, 0)
-	tag.lastContent = make([]byte, 0)
 	return &tag
 }
 
@@ -68,6 +64,14 @@ func (tag *Tag) AddTag(child *Tag) {
 // AddAttrib adds an attribute to a tag, for instance "size" and "20"
 func (tag *Tag) AddAttrib(attrName string, attrValue []byte) {
 	tag.attrs[attrName] = attrValue
+}
+
+// AddAttribMap adds attributes based on a given map
+func (tag *Tag) AddAttribMap(attrMap map[string][]byte) {
+	//attrName string, attrValue []byte) {
+	for attrName, attrValue := range attrMap {
+		tag.attrs[attrName] = attrValue
+	}
 }
 
 // AddSingularAttrib adds attribute without a value
