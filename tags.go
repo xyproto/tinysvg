@@ -159,32 +159,32 @@ func (tag *Tag) getFlatXML() []byte {
 
 // writeFlatXML renders an XML tag to an io.Writer.
 // This will generate a bytes for a tag, non-recursively.
-func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
+func (tag *Tag) writeFlatXML(w io.Writer) (n int64, err error) {
 	// TODO: This function is a bit long and verbose
 
 	// For the root tag
 	if (len(tag.name) > 0) && (tag.name[0] == '<') {
 		x, err := w.Write(tag.name)
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
 		x, err = w.Write(tag.content)
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
 		x, err = w.Write(tag.xmlContent)
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
 		x, err = w.Write(tag.lastContent)
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
-		n += x
+		n += int64(x)
 		return n, nil
 	}
 	// For indenting
@@ -193,32 +193,32 @@ func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
 	attrs := tag.GetAttrString()
 
 	x, err := w.Write(spacing)
-	n += x
+	n += int64(x)
 	if err != nil {
 		return n, err
 	}
 
 	x, err = w.Write([]byte("<"))
-	n += x
+	n += int64(x)
 	if err != nil {
 		return n, err
 	}
 
 	x, err = w.Write(tag.name)
-	n += x
+	n += int64(x)
 	if err != nil {
 		return n, err
 	}
 
 	if len(attrs) > 0 {
 		x, err = w.Write([]byte(" "))
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
 
 		x, err = w.Write(attrs)
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
@@ -227,7 +227,7 @@ func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
 	if (len(tag.content) == 0) && (len(tag.xmlContent) == 0) && (len(tag.lastContent) == 0) {
 
 		x, err = w.Write([]byte(" />"))
-		n += x
+		n += int64(x)
 		if err != nil {
 			return n, err
 		}
@@ -237,80 +237,80 @@ func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
 			if tag.xmlContent[0] != ' ' {
 
 				x, err = w.Write([]byte(">"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(spacing)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(tag.xmlContent)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(spacing)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write([]byte("</"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(tag.name)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write([]byte(">"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 			} else {
 				x, err = w.Write([]byte(">"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(tag.xmlContent)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(spacing)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write([]byte("</"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write(tag.name)
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
 
 				x, err = w.Write([]byte(">"))
-				n += x
+				n += int64(x)
 				if err != nil {
 					return n, err
 				}
@@ -318,37 +318,37 @@ func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
 			}
 		} else {
 			x, err = w.Write([]byte(">"))
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
 
 			x, err = w.Write(tag.content)
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
 
 			x, err = w.Write(tag.lastContent)
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
 
 			x, err = w.Write([]byte("</"))
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
 
 			x, err = w.Write(tag.name)
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
 
 			x, err = w.Write([]byte(">"))
-			n += x
+			n += int64(x)
 			if err != nil {
 				return n, err
 			}
@@ -497,15 +497,19 @@ func (tag *Tag) Bytes() []byte {
 		}
 		child = child.nextSibling
 	}
+	origContent := tag.xmlContent
 	tag.xmlContent = append(tag.xmlContent, tag.content...)
 	tag.xmlContent = append(tag.xmlContent, content...)
 	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
-	return tag.getFlatXML()
+	retval := tag.getFlatXML()
+	tag.xmlContent = origContent
+	return retval
 }
 
 // WriteTo renders XML for a tag, recursively.
 // The generated XML is written to the given io.Writer.
-func (tag *Tag) WriteTo(w io.Writer) (n int, err error) {
+// This also fullfills the io.WriterTo interface.
+func (tag *Tag) WriteTo(w io.Writer) (n int64, err error) {
 	if tag.CountChildren() == 0 {
 		return tag.writeFlatXML(w)
 	}
@@ -517,10 +521,13 @@ func (tag *Tag) WriteTo(w io.Writer) (n int, err error) {
 		child.WriteTo(&content)
 		child = child.nextSibling
 	}
+	origContent := tag.xmlContent
 	tag.xmlContent = append(tag.xmlContent, tag.content...)
 	tag.xmlContent = append(tag.xmlContent, content.Bytes()...)
 	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
-	return tag.writeFlatXML(w)
+	n, err = tag.writeFlatXML(w)
+	tag.xmlContent = origContent
+	return n, err
 }
 
 // String returns the XML contents as a string
@@ -556,6 +563,7 @@ func (image *Document) SaveSVG(filename string) error {
 
 // WriteTo will write the current image to the given io.Writer.
 // Returns bytes written and possibly an error.
-func (image *Document) WriteTo(w io.Writer) (int, error) {
+// This also fullfills the io.WriterTo interface.
+func (image *Document) WriteTo(w io.Writer) (int64, error) {
 	return image.root.WriteTo(w)
 }
