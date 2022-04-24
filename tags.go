@@ -451,16 +451,16 @@ func (tag *Tag) GetTag(name []byte) (*Tag, error) {
 }
 
 // ShallowCopy creates a copy of a tag, but uses the same attribute map!
-func (t *Tag) ShallowCopy() *Tag {
-	var n Tag
-	n.name = t.name
-	n.content = t.content
-	n.lastContent = t.lastContent
-	n.xmlContent = t.xmlContent
-	n.attrs = t.attrs
-	n.nextSibling = t.nextSibling
-	n.firstChild = t.firstChild
-	return &n
+func (tag *Tag) ShallowCopy() *Tag {
+	var nt Tag
+	nt.name = tag.name
+	nt.content = tag.content
+	nt.lastContent = tag.lastContent
+	nt.xmlContent = tag.xmlContent
+	nt.attrs = tag.attrs
+	nt.nextSibling = tag.nextSibling
+	nt.firstChild = tag.firstChild
+	return &nt
 }
 
 // Bytes (previously getXMLRecursively) renders XML for a tag, recursively.
