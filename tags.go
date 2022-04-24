@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 )
 
 // Tag represents an XML tag, as part of a larger XML document
@@ -533,37 +532,4 @@ func (tag *Tag) WriteTo(w io.Writer) (n int64, err error) {
 // String returns the XML contents as a string
 func (tag *Tag) String() string {
 	return string(tag.Bytes())
-}
-
-// AddContent adds content to the body tag.
-// Returns the body tag and nil if successful.
-// Returns and an error if no body tag is found, else nil.
-func (image *Document) AddContent(content []byte) (*Tag, error) {
-	body, err := image.root.GetTag([]byte("body"))
-	if err == nil {
-		body.AddContent(content)
-	}
-	return body, err
-}
-
-// Bytes renders the image as an XML document
-func (image *Document) Bytes() []byte {
-	return image.root.Bytes()
-}
-
-// String renders the image as an XML document
-func (image *Document) String() string {
-	return image.root.String()
-}
-
-// SaveSVG will save the current image as an SVG file
-func (image *Document) SaveSVG(filename string) error {
-	return ioutil.WriteFile(filename, image.Bytes(), 0644)
-}
-
-// WriteTo will write the current image to the given io.Writer.
-// Returns bytes written and possibly an error.
-// This also fullfills the io.WriterTo interface.
-func (image *Document) WriteTo(w io.Writer) (int64, error) {
-	return image.root.WriteTo(w)
 }
