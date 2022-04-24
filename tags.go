@@ -510,19 +510,15 @@ func (tag *Tag) WriteTo(w io.Writer) (n int, err error) {
 		return tag.writeFlatXML(w)
 	}
 	var (
-		content    []byte
-		xmlContent []byte
-		child      = tag.firstChild
+		content bytes.Buffer
+		child   = tag.firstChild
 	)
 	for child != nil {
-		xmlContent = child.Bytes()
-		if len(xmlContent) > 0 {
-			content = append(content, xmlContent...)
-		}
+		child.WriteTo(&content)
 		child = child.nextSibling
 	}
 	tag.xmlContent = append(tag.xmlContent, tag.content...)
-	tag.xmlContent = append(tag.xmlContent, content...)
+	tag.xmlContent = append(tag.xmlContent, content.Bytes()...)
 	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
 	return tag.writeFlatXML(w)
 }
