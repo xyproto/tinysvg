@@ -21,24 +21,6 @@ type Tag struct {
 	firstChild  *Tag // first child
 }
 
-// Document is an XML document, with a title and a root tag
-type Document struct {
-	title []byte
-	root  *Tag
-}
-
-// NewDocument creates a new XML/HTML/SVG image, with a root tag.
-// If rootTagName contains "<" or ">", it can be used for preceding declarations,
-// like <!DOCTYPE html> or <?xml version=\"1.0\"?>.
-// Returns a pointer to a Document.
-func NewDocument(title, rootTagName []byte) *Document {
-	var image Document
-	image.title = title
-	rootTag := NewTag(rootTagName)
-	image.root = rootTag
-	return &image
-}
-
 // NewTag creates a new tag based on the given name.
 // "name" is what will appear right after "<" when rendering as XML/HTML/SVG.
 func NewTag(name []byte) *Tag {
@@ -444,16 +426,6 @@ func (tag *Tag) LastChild() *Tag {
 	return child
 }
 
-// GetTag searches all tags for the given name
-func (image *Document) GetTag(name []byte) (*Tag, error) {
-	return image.root.GetTag(name)
-}
-
-// GetRoot returns the root tag of the image
-func (image *Document) GetRoot() *Tag {
-	return image.root
-}
-
 // GetTag finds a tag by name and returns an error if not found.
 // Returns the first tag that matches.
 func (tag *Tag) GetTag(name []byte) (*Tag, error) {
@@ -478,6 +450,19 @@ func (tag *Tag) GetTag(name []byte) (*Tag, error) {
 	return nil, couldNotFindError
 }
 
+// ShallowCopy creates a copy of a tag, but uses the same attribute map!
+func (t *Tag) ShallowCopy() *Tag {
+	var n Tag
+	n.name = t.name
+	n.content = t.content
+	n.lastContent = t.lastContent
+	n.xmlContent = t.xmlContent
+	n.attrs = t.attrs
+	n.nextSibling = t.nextSibling
+	n.firstChild = t.firstChild
+	return &n
+}
+
 // Bytes (previously getXMLRecursively) renders XML for a tag, recursively.
 // The generated XML is returned as a []byte.
 func (tag *Tag) Bytes() []byte {
@@ -496,13 +481,11 @@ func (tag *Tag) Bytes() []byte {
 		}
 		child = child.nextSibling
 	}
-	origContent := tag.xmlContent
-	tag.xmlContent = append(tag.xmlContent, tag.content...)
-	tag.xmlContent = append(tag.xmlContent, content...)
-	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
-	retval := tag.getFlatXML()
-	tag.xmlContent = origContent
-	return retval
+	tagCopy := tag.ShallowCopy()
+	tagCopy.xmlContent = append(tagCopy.xmlContent, tag.content...)
+	tagCopy.xmlContent = append(tagCopy.xmlContent, content...)
+	tagCopy.xmlContent = append(tagCopy.xmlContent, tag.lastContent...)
+	return tagCopy.getFlatXML()
 }
 
 // WriteTo renders XML for a tag, recursively.
@@ -520,13 +503,11 @@ func (tag *Tag) WriteTo(w io.Writer) (n int64, err error) {
 		child.WriteTo(&content)
 		child = child.nextSibling
 	}
-	origContent := tag.xmlContent
-	tag.xmlContent = append(tag.xmlContent, tag.content...)
-	tag.xmlContent = append(tag.xmlContent, content.Bytes()...)
-	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
-	n, err = tag.writeFlatXML(w)
-	tag.xmlContent = origContent
-	return n, err
+	tagCopy := tag.ShallowCopy()
+	tagCopy.xmlContent = append(tagCopy.xmlContent, tag.content...)
+	tagCopy.xmlContent = append(tagCopy.xmlContent, content.Bytes()...)
+	tagCopy.xmlContent = append(tagCopy.xmlContent, tag.lastContent...)
+	return tagCopy.writeFlatXML(w)
 }
 
 // String returns the XML contents as a string
