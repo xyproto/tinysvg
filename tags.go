@@ -157,9 +157,9 @@ func (tag *Tag) getFlatXML() []byte {
 	return ret
 }
 
-// Write renders an XML tag to an io.Writer.
+// writeFlatXML renders an XML tag to an io.Writer.
 // This will generate a bytes for a tag, non-recursively.
-func (tag *Tag) Write(w io.Writer) (n int, err error) {
+func (tag *Tag) writeFlatXML(w io.Writer) (n int, err error) {
 	// TODO: This function is a bit long and verbose
 
 	// For the root tag
@@ -482,13 +482,14 @@ func (tag *Tag) GetTag(name []byte) (*Tag, error) {
 // Bytes (previously getXMLRecursively) renders XML for a tag, recursively.
 // The generated XML is returned as a []byte.
 func (tag *Tag) Bytes() []byte {
-	var content, xmlContent []byte
-
 	if tag.CountChildren() == 0 {
 		return tag.getFlatXML()
 	}
-
-	child := tag.firstChild
+	var (
+		content    []byte
+		xmlContent []byte
+		child      = tag.firstChild
+	)
 	for child != nil {
 		xmlContent = child.Bytes()
 		if len(xmlContent) > 0 {
@@ -496,12 +497,34 @@ func (tag *Tag) Bytes() []byte {
 		}
 		child = child.nextSibling
 	}
-
 	tag.xmlContent = append(tag.xmlContent, tag.content...)
 	tag.xmlContent = append(tag.xmlContent, content...)
 	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
-
 	return tag.getFlatXML()
+}
+
+// WriteTo renders XML for a tag, recursively.
+// The generated XML is written to the given io.Writer.
+func (tag *Tag) WriteTo(w io.Writer) (n int, err error) {
+	if tag.CountChildren() == 0 {
+		return tag.writeFlatXML(w)
+	}
+	var (
+		content    []byte
+		xmlContent []byte
+		child      = tag.firstChild
+	)
+	for child != nil {
+		xmlContent = child.Bytes()
+		if len(xmlContent) > 0 {
+			content = append(content, xmlContent...)
+		}
+		child = child.nextSibling
+	}
+	tag.xmlContent = append(tag.xmlContent, tag.content...)
+	tag.xmlContent = append(tag.xmlContent, content...)
+	tag.xmlContent = append(tag.xmlContent, tag.lastContent...)
+	return tag.writeFlatXML(w)
 }
 
 // String returns the XML contents as a string
@@ -533,4 +556,10 @@ func (image *Document) String() string {
 // SaveSVG will save the current image as an SVG file
 func (image *Document) SaveSVG(filename string) error {
 	return ioutil.WriteFile(filename, image.Bytes(), 0644)
+}
+
+// WriteTo will write the current image to the given io.Writer.
+// Returns bytes written and possibly an error.
+func (image *Document) WriteTo(w io.Writer) (int, error) {
+	return image.root.WriteTo(w)
 }
