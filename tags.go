@@ -7,6 +7,7 @@ package tinysvg
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 )
 
@@ -154,6 +155,207 @@ func (tag *Tag) getFlatXML() []byte {
 		}
 	}
 	return ret
+}
+
+// Write renders an XML tag to an io.Writer.
+// This will generate a bytes for a tag, non-recursively.
+func (tag *Tag) Write(w io.Writer) (n int, err error) {
+	// TODO: This function is a bit long and verbose
+
+	// For the root tag
+	if (len(tag.name) > 0) && (tag.name[0] == '<') {
+		x, err := w.Write(tag.name)
+		n += x
+		if err != nil {
+			return n, err
+		}
+		x, err = w.Write(tag.content)
+		n += x
+		if err != nil {
+			return n, err
+		}
+		x, err = w.Write(tag.xmlContent)
+		n += x
+		if err != nil {
+			return n, err
+		}
+		x, err = w.Write(tag.lastContent)
+		n += x
+		if err != nil {
+			return n, err
+		}
+		n += x
+		return n, nil
+	}
+	// For indenting
+	spacing := make([]byte, 0)
+	// Generate the XML based on the tag
+	attrs := tag.GetAttrString()
+
+	x, err := w.Write(spacing)
+	n += x
+	if err != nil {
+		return n, err
+	}
+
+	x, err = w.Write([]byte("<"))
+	n += x
+	if err != nil {
+		return n, err
+	}
+
+	x, err = w.Write(tag.name)
+	n += x
+	if err != nil {
+		return n, err
+	}
+
+	if len(attrs) > 0 {
+		x, err = w.Write([]byte(" "))
+		n += x
+		if err != nil {
+			return n, err
+		}
+
+		x, err = w.Write(attrs)
+		n += x
+		if err != nil {
+			return n, err
+		}
+
+	}
+	if (len(tag.content) == 0) && (len(tag.xmlContent) == 0) && (len(tag.lastContent) == 0) {
+
+		x, err = w.Write([]byte(" />"))
+		n += x
+		if err != nil {
+			return n, err
+		}
+
+	} else {
+		if len(tag.xmlContent) > 0 {
+			if tag.xmlContent[0] != ' ' {
+
+				x, err = w.Write([]byte(">"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(spacing)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(tag.xmlContent)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(spacing)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write([]byte("</"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(tag.name)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write([]byte(">"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+			} else {
+				x, err = w.Write([]byte(">"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(tag.xmlContent)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(spacing)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write([]byte("</"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write(tag.name)
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+				x, err = w.Write([]byte(">"))
+				n += x
+				if err != nil {
+					return n, err
+				}
+
+			}
+		} else {
+			x, err = w.Write([]byte(">"))
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+			x, err = w.Write(tag.content)
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+			x, err = w.Write(tag.lastContent)
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+			x, err = w.Write([]byte("</"))
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+			x, err = w.Write(tag.name)
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+			x, err = w.Write([]byte(">"))
+			n += x
+			if err != nil {
+				return n, err
+			}
+
+		}
+	}
+	return n, nil
 }
 
 // GetChildren returns all children for a given tag.
