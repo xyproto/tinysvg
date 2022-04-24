@@ -50,13 +50,20 @@ type (
 
 var ErrPair = errors.New("position pairs must be exactly two comma separated numbers")
 
+const (
+	xmlVersionEncoding = `<?xml version="1.0" encoding="UTF-8"?>`
+	xmlNS              = "http://www.w3.org/2000/svg"
+	svgProfile         = "tiny"
+	svgVersion         = "1.2"
+)
+
 // Create a new TinySVG document, where the width and height is defined in pixels, using the "px" suffix
 func NewTinySVG(w, h int) (*Document, *Tag) {
-	page := NewDocument([]byte{}, []byte(`<?xml version="1.0" encoding="UTF-8"?>`))
+	page := NewDocument([]byte{}, []byte(xmlVersionEncoding))
 	svg := page.root.AddNewTag([]byte("svg"))
-	svg.AddAttrib("xmlns", []byte("http://www.w3.org/2000/svg"))
-	svg.AddAttrib("version", []byte("1.2"))
-	svg.AddAttrib("baseProfile", []byte("tiny"))
+	svg.AddAttrib("xmlns", []byte(xmlNS))
+	svg.AddAttrib("version", []byte(svgVersion))
+	svg.AddAttrib("baseProfile", []byte(svgProfile))
 	svg.AddAttrib("viewBox", []byte(fmt.Sprintf("%d %d %d %d", 0, 0, w, h)))
 	svg.AddAttrib("width", []byte(fmt.Sprintf("%dpx", w)))
 	svg.AddAttrib("height", []byte(fmt.Sprintf("%dpx", h)))
@@ -66,16 +73,16 @@ func NewTinySVG(w, h int) (*Document, *Tag) {
 // NewTinySVG2 creates new TinySVG 1.2 image. Pos and Size defines the viewbox
 func NewTinySVG2(p *Pos, s *Size) (*Document, *Tag) {
 	// No page title is needed when building an SVG tag tree
-	page := NewDocument([]byte{}, []byte(`<?xml version="1.0" encoding="UTF-8"?>`))
+	page := NewDocument([]byte{}, []byte(xmlVersionEncoding))
 
 	// No longer needed for TinySVG 1.2. See: https://www.w3.org/TR/SVGTiny12/intro.html#defining
 	// <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">
 
 	// Add the root tag
 	svg := page.root.AddNewTag([]byte("svg"))
-	svg.AddAttrib("xmlns", []byte("http://www.w3.org/2000/svg"))
-	svg.AddAttrib("version", []byte("1.2"))
-	svg.AddAttrib("baseProfile", []byte("tiny"))
+	svg.AddAttrib("xmlns", []byte(xmlNS))
+	svg.AddAttrib("version", []byte(svgVersion))
+	svg.AddAttrib("baseProfile", []byte(svgProfile))
 	svg.AddAttrib("viewBox", []byte(fmt.Sprintf("%f %f %f %f", p.X, p.Y, s.W, s.H)))
 	return page, svg
 }
