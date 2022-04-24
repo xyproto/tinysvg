@@ -33,8 +33,8 @@ type Document struct {
 // Returns a pointer to a Document.
 func NewDocument(title, rootTagName []byte) *Document {
 	var image Document
-	image.title = []byte(title)
-	rootTag := NewTag([]byte(rootTagName))
+	image.title = title
+	rootTag := NewTag(rootTagName)
 	image.root = rootTag
 	return &image
 }
