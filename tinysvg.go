@@ -432,7 +432,7 @@ func (svg *Tag) Text(x, y, fontSize int, fontFamily, text, color string) *Tag {
 	return svg.Text2(&Pos{float64(x), float64(y)}, &Font{fontFamily, fontSize}, text, ColorByName(color))
 }
 
-// Create a new Yes/No/Auto struct. If auto is true, it overrides the yes value.
+// NewYesNoAuto will create a new Yes/No/Auto struct. If auto is true, it overrides the yes value.
 func NewYesNoAuto(yes bool, auto bool) YesNoAuto {
 	if auto {
 		return AUTO
