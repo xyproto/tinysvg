@@ -239,7 +239,7 @@ func (svg *Tag) Stroke2(c *Color) {
 func RGBBytes(r, g, b int) []byte {
 	rs := strconv.FormatInt(int64(r), 16)
 	gs := strconv.FormatInt(int64(g), 16)
-	bs := strconv.FormatInt(int64(g), 16)
+	bs := strconv.FormatInt(int64(b), 16)
 	if len(rs) == 1 && len(gs) == 1 && len(bs) == 1 {
 		// short form
 		return []byte("#" + rs + gs + bs)
