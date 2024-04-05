@@ -2,7 +2,6 @@
 //
 // Some function names are suffixed with "2" if they take structs instead of ints/floats,
 // "i" if they take ints and "f" if they take floats. Using generics might be an option.
-//
 package tinysvg
 
 import (
@@ -17,9 +16,9 @@ const (
 	TRANSPARENT = 0.0
 	OPAQUE      = 1.0
 
-	YES  = 0
-	NO   = 1
-	AUTO = 2
+	NO = iota
+	YES
+	AUTO
 )
 
 type (
