@@ -6,6 +6,6 @@ This package mainly uses `[]byte` slices instead of strings, and does not indent
 
 ## General info
 
-* Version: 1.1.1
+* Version: 1.2.0
 * Author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
 * License: BSD-3
